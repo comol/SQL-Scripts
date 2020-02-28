@@ -1,0 +1,28 @@
+USE [base]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[usp_GenerateSQL]
+    @Pattern AS varchar(255)
+    ,@PrintQuery AS bit
+    ,@ExecQuery AS bit
+AS
+BEGIN
+    DECLARE @sql AS varchar(max)
+
+    SELECT @sql = COALESCE(@sql, '') + 'truncate table [' + TABLE_NAME + ']' + CHAR(13) + CHAR(10)
+    FROM INFORMATION_SCHEMA.TABLES
+    WHERE TABLE_NAME LIKE @Pattern
+
+    IF @PrintQuery = 1 PRINT @sql
+    IF @ExecQuery = 1 EXEC (@sql)
+END
+
+GO
+
+exec usp_GenerateSQL @Pattern = '%Chng%', @PrintQuery = 0, @ExecQuery = 1

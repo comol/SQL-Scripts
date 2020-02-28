@@ -1,0 +1,28 @@
+BACKUP LOG Имя_Базы_Данных WITH TRUNCATE_ONLY
+go
+DBCC SHRINKFILE(Имя_Файла_Журнала_Транзакций) 
+go
+
+
+USE [Database] 
+ALTER DATABASE [Database] SET RECOVERY SIMPLE
+go 
+DBCC SHRINKFILE ([Database]_log, 1); 
+ALTER DATABASE [Database] SET RECOVERY FULL
+go 
+
+
+USE [Database] 
+BACKUP LOG [Database]  TO DISK='NUL:'  
+go
+DBCC SHRINKFILE ([Database]_log, 1)
+go 
+
+
+select log_reuse_wait_desc from sys.databases
+
+
+sp_removedbreplication '[Database]'
+
+
+DBCC OPENTRAN
